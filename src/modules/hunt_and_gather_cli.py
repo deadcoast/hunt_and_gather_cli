@@ -1,3 +1,4 @@
+import math
 import argparse
 import contextlib
 import datetime
@@ -8,7 +9,7 @@ import subprocess
 
 from jsonschema.cli import parser
 from poetry.mixology import result
-
+from pydantic._internal._decorators import ReturnType
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -282,12 +283,19 @@ def skin_command(param1, param2):
     return result
 
 
-def tanner_command(angle):
+def calculate_tangent(angle):
     """
-    This function calculates the tannergent of a given angle.
+    This function calculates the tangent of a given angle.
     """
-    with contextlib.suppress(Exception):
-        return ...
+    if not isinstance(angle, (int, float)):
+        raise ValueError("angle must be a number")
+    if angle < -90 or angle > 90:
+        raise ValueError("angle must be within the range of -90 to 90 degrees")
+    with contextlib.suppress(ValueError, ZeroDivisionError):
+        return math.tan(angle)
+    except Exception as e:
+        logging.error(f"Error occurred: {e}")
+        return None
 
 
 def tailor_command(param1, param2):
@@ -442,9 +450,13 @@ class HuntAndGatherCLI:
                                      help='Remove placeholders and leave the file blank')
             skin_parser.add_argument('--cabin', action='store_true', help='Return to the main menu after processing')
 
-            # Tan command
+            # Tanner command            tanner_parser = subparsers.add_parser('tanner', help='Insert the correct variables into the file')
             tanner_parser = subparsers.add_parser('tanner', help='Insert the correct variables into the file')
             tanner_parser.add_argument('--file', required=True, help='File to process')
+            tanner_parser.add_argument('-folder', required=False, help='Folder to search in')
+            tanner_parser.add_argument('-pattern', required=False, help='Pattern to search for in file names')
+            tanner_parser.add_argument('-extension', required=False, help='Extension to search for in file names')
+
 
             # Tailor command
             tailor_parser = subparsers.add_parser('tailor', help='Open the file in a specified editor')
@@ -512,12 +524,6 @@ class HuntAndGatherCLI:
                                  help='Remove placeholders and leave the file blank')
         skin_parser.add_argument('--cabin', action='store_true', help='Return to the main menu after processing')
 
-        # Tanner command
-        tanner_parser = subparsers.add_parser('tanner', help='Insert the correct variables into the file')
-        tanner_parser.add_argument('--file', required=True, help='File to process')
-        tanner_parser.add_argument('-folder', required=False, help='Folder to search in')
-        tanner_parser.add_argument('-pattern', required=False, help='Pattern to search for in file names')
-        tanner_parser.add_argument('-extension', required=False, help='Extension to search for in file names')
 
 
         # Tailor command
