@@ -194,11 +194,9 @@ class HunterXTracker:
             logging.info(f"Luring code with string: {string}")
             # Implement code luring functionality here
             lured_code = []
-            for file_path in glob.glob(dir + '/**/*.py', recursive=True):
+            for file_path in glob.glob(f'{dir}/**/*.py', recursive=True):
                 with open(file_path, 'r') as f:
-                    for line in f:
-                        if string in line:
-                            lured_code.append(line)
+                    lured_code.extend(line for line in f if string in line)
             return lured_code
         except FileNotFoundError as e:
             logging.error(f"File not found: {e}")

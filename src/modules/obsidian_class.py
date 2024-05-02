@@ -47,7 +47,7 @@ class DynamicObsidianCLI:
         print(f"Enhancing {file} by inserting correct variables...")
 
     def tailor(self, file, editor=None):
-        editor = editor if editor else 'default editor'
+        editor = editor or 'default editor'
         print(f"Opening {file} in {editor}...")
 
 
