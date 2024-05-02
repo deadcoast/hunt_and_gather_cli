@@ -488,10 +488,10 @@ class HuntAndGatherCLI:
 
     def run(self, command, map_command=None, skin_command=None, tanner_command=None, tailor_command=None, help_command=None):
         def unknown_command():
-            ...
+            raise NotImplementedError("Unknown command")
 
         def gather_command():
-            ...
+            raise NotImplementedError("Gather command")
 
         def butcher_command():
             ...
@@ -520,16 +520,17 @@ class HuntAndGatherCLI:
         }
 
         command_function = COMMAND_MAPPING.get(command)
-        command_function()
+        if callable(command_function):
+            command_function()
 
         try:
             self.hunter_arguments()
         except FileNotFoundError as e:
-            logging.error(f"File not found: {str(e)}")
+            logging.exception("File not found: %s", str(e))
         except PermissionError as e:
-            logging.error(f"Permission denied: {str(e)}")
+            logging.exception("Permission denied: %s", str(e))
         except Exception as e:
-            logging.exception("An error occurred")
+            logging.exception("An error occurred: %s", str(e))
             raise
 
     def unknown_command(cabin):
@@ -613,8 +614,17 @@ class HuntAndGatherCLI:
             unknown_command(args.cabin)
 
     def get_command(self):
-        if self.command is None:
+        """
+        Retrieves the command from the user and validates it.
+        If the command is invalid, it sets it to None and prompts the user for valid input.
+        """
+        COMMANDS = ['map', 'skin', 'tanner', 'tailor', 'cabin', 'help', 'gather', 'butcher']
+    
+        if self.command is None or self.command not in COMMANDS:
             self.hunter_arguments()
+            if self.command not in COMMANDS:
+                self.command = None
+    
         return self.command
 
     def execute(self):
