@@ -1,3 +1,4 @@
+from typing import List
 from numbers import Real
 import math
 import argparse
@@ -441,6 +442,26 @@ def map_command():
     pass
 
 
+def handle_errors(args: List[str]) -> None:
+    """
+    Handle errors in the program.
+
+    Args:
+        args (list): A list of arguments.
+
+    Returns:
+        None
+    """
+    logging.debug("Starting handle_errors function")
+    try:
+        # code to handle errors
+        ...
+    except Exception as e:
+        # code to handle specific error types
+        ...
+    logging.debug("Finished handle_errors function")
+
+
 class HuntAndGatherCLI:
     def __init__(self):
         self.args = None
@@ -486,55 +507,81 @@ class HuntAndGatherCLI:
         except Exception as e:
             logging.error(f"An error occurred: {str(e)}")
 
-    def run(self, command, map_command=None, skin_command=None, tanner_command=None, tailor_command=None, help_command=None):
-        def unknown_command():
-            raise NotImplementedError("Unknown command")
+    class UnknownCommandError(Exception):
+        pass
 
-        def gather_command():
-            raise NotImplementedError("Gather command")
-
-        def butcher_command():
-            ...
-
-        def map_command():
-            map_command()
-
-        def skin_command():
-            skin_command(skinner(file=command.file, clean=command.clean))
-
-        def tanner_command():
-            tanner_command(file=command.file)
-
-        def tailor_command():
-            tailor_command(file=command.file, editor=command.editor)
-
+    class HuntAndGatherCLI:
         COMMAND_MAPPING = {
             'map': map_command,
             'skin': skin_command,
             'tanner': tanner_command,
             'tailor': tailor_command,
-            'cabin': lambda: unknown_command(command.cabin),
-            'help': help_command,
-            'gather': gather_command,
-            'butcher': butcher_command,
+            'cabin': unknown_command,
         }
+        
 
-        command_function = COMMAND_MAPPING.get(command)
-        if callable(command_function):
-            command_function()
+        def run(self, command, map_cmd=None, skin_cmd=None, tanner_cmd=None, tailor_cmd=None, help_cmd=None):
+            def gather_command():
+                raise NotImplementedError("Gather command")
 
-        try:
-            self.hunter_arguments()
-        except FileNotFoundError as e:
-            logging.exception("File not found: %s", str(e))
-        except PermissionError as e:
-            logging.exception("Permission denied: %s", str(e))
-        except Exception as e:
-            logging.exception("An error occurred: %s", str(e))
-            raise
+            def butcher_command():
+                ...
 
-    def unknown_command(cabin):
-        pass
+            def map_command():
+                map_cmd()
+
+            def skin_command():
+                skin_cmd(skinner(file=command.file, clean=command.clean))
+
+            def tanner_command():
+                tanner_cmd(file=command.file)
+
+            def tailor_command():
+                tailor_cmd(file=command.file, editor=command.editor)
+
+            command_function = self.COMMAND_MAPPING.get(command)
+            if callable(command_function):
+                return command_function()
+
+            return self.hunter_arguments()
+
+        def gather_command(self):
+            raise NotImplementedError("Gather command")
+
+        def butcher_command(self):
+            ...
+
+        def map_command(self):
+            self.map_cmd()
+
+        def skin_command(self):
+            self.skin_cmd(skinner(file=command.file, clean=command.clean))
+
+        def tanner_command(self):
+            self.tanner_cmd(file=command.file)
+
+        def tailor_command(self):
+            self.tailor_cmd(file=command.file, editor=command.editor)
+
+        def handle_errors(func):
+            ...
+        def wrapper(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except FileNotFoundError as e:
+                logging.error("File not found: %s", str(e))
+            except PermissionError as e:
+                logging.error("Permission denied: %s", str(e))
+            except Exception as e:
+                logging.critical("An error occurred: %s", str(e))
+                raise
+
+    def handle_unknown_command(self, command=logging.error):
+        """
+        Handle unknown command by logging an error message.
+        """
+        logging.error("Unknown command: %s", HunterXUnknownHandler.__UNKNOWN_COMMAND_MESSAGE)
+        return False
 
 
     def hunter_arguments(self):
@@ -629,14 +676,19 @@ class HuntAndGatherCLI:
 
     def execute(self):
         try:
-            self.parse_command_line_arguments()
+            self.parse_arguments()
+        except OSError as e:
+            logging.error(f"Error occurred: {str(e)}")
+            return "Error occurred: {str(e)}"
         except FileNotFoundError as e:
-            logging.error(f"File not found: {str(e)}")
+            logging.error("File not found: %s", str(e))
+            return "File not found: {str(e)}"
         except PermissionError as e:
-            logging.error(f"Permission denied: {str(e)}")
+            logging.error("Permission denied: %s", str(e))
+            return "Permission denied: {str(e)}"
         except Exception as e:
-            logging.exception("An error occurred")
-            raise
+            logging.error(f"An error occurred: {str(e)}")
+            return "An error occurred: {str(e)}"
         return True
 
     class CommandParser:
@@ -678,31 +730,19 @@ class HuntAndGatherCLI:
             logging.error(f"An error occurred during argument parsing: {str(e)}")
 
 
-def main(log_level, logger, cli_instance):
-    """
-    Improved version of the main function.
-
-    Args:
-        log_level (int): The log level to set for the logger.
-        cli_instance (HuntAndGatherCLI): An instance of the HuntAndGatherCLI class.
-        logger (Logger): The logger to use for logging.
-
-    Returns:
-        bool: True if the CLI execution was successful, False otherwise.
-
-    """
+def main(log_level, cli_instance):
     try:
-        cli_instance.run()
-        return True
+        result = cli_instance.run()
+        if result:
+            return True
+        else:
+            raise Exception("CLI execution failed")
     except FileNotFoundError as e:
-        logger.error(f"File not found: {str(e)}")
-        return False
+        raise FileNotFoundError(f"File not found: {str(e)}")
     except PermissionError as e:
-        logger.error(f"Permission denied: {str(e)}")
-        return False
+        raise PermissionError(f"Permission denied: {str(e)}")
     except Exception as e:
-        logger.exception("An error occurred")
-        return False
+        raise Exception("An error occurred")
 
 
 if __name__ == '__main__':
