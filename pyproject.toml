@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "hunt-and-gather-cli"
+version = "0.1.0"
+description = "Python Cleanup Tools"
+authors = ["Goro Kaerubi <161206250+deadcoast@users.noreply.github.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+glob2 = "^0.7"
+async-itertools = "^0.0.1"
+logging = "^0.4.9.6"
+black = "^24.4.2"
+argparse = "^1.4.0"
+typing = "^3.10.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
