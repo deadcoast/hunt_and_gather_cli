@@ -292,10 +292,10 @@ def tailor_command(param1, param2):
     except Exception as e:
         # handle the error
         print(f"An error occurred: {e}")
-    
+
     # Add functionality here
     print('Executing tailor command')
-    
+
     return "Tailored command"
 
 
@@ -360,7 +360,6 @@ def my_map(cabin, hunt, knife, tan, skin, tailor):
         return ['--cabin', '--hunt', '--knife', '--tan', '--skin', '--tailor']
 
 
-
 def butcher_command(arg1, arg2):
     """
     This function executes the 'butcher' command.
@@ -371,6 +370,45 @@ def butcher_command(arg1, arg2):
     except Exception as e:
         logging.error(f"An error occurred: {str(e)}")
     return True  # or return False
+
+
+def skin(file, clean, cabin):
+    """
+    This method performs skinning on a given file.
+
+    Args:
+        file (str): The path of the file to be skinned.
+        clean (bool): A flag indicating whether to perform a clean skinning.
+        cabin (bool): A flag indicating whether to return to the main menu after skinning.
+
+    Returns:
+        bool: True if the skinning operation was successful, False otherwise.
+    """
+    try:
+        logging.info(f"Starting skinning process for file: {file}")
+
+        if not os.path.exists(file):
+            logging.error(f"File {file} does not exist.")
+            return False
+
+        if not os.access(file, os.R_OK):
+            logging.error(f"File {file} is not readable.")
+            return False
+
+        if clean:
+            logging.info(f"Cleaning {file}...")
+        else:
+            logging.info(f"Processing {file} for skinning...")
+
+        if cabin:
+            logging.info("Returning to the main menu...")
+
+        logging.info(f"Finished skinning process for file: {file}")
+        return True
+
+    except Exception as e:
+        logging.error(f"An error occurred: {str(e)}")
+        return False  # code logic here
 
 
 class HuntAndGatherCLI:
@@ -467,57 +505,36 @@ class HuntAndGatherCLI:
                                             'atom', 'notepad'], help='Editor to use')
 
         args = parser.parse_args()
-        getattr(self, args.command, unknown_command)()
-
-        # code logic here
-
-    class HunterCodeSkinner:
-        def skin(self, file, clean, cabin):
-            """
-            This method performs skinning on a given file.
-
-            Args:
-                file (str): The path of the file to be skinned.
-                clean (bool): A flag indicating whether to perform a clean skinning.
-                cabin (bool): A flag indicating whether to return to the main menu after skinning.
-
-            Returns:
-                bool: True if the skinning operation was successful, False otherwise.
-            """
-            try:
-                logging.info(f"Starting skinning process for file: {file}")
-
-                if not os.path.exists(file):
-                    logging.error(f"File {file} does not exist.")
-                    return False
-
-                if not os.access(file, os.R_OK):
-                    logging.error(f"File {file} is not readable.")
-                    return False
-
-                if clean:
-                    logging.info(f"Cleaning {file}...")
-                else:
-                    logging.info(f"Processing {file} for skinning...")
-
-                if cabin:
-                    logging.info("Returning to the main menu...")
-
-                logging.info(f"Finished skinning process for file: {file}")
-                return True
-
-            except Exception as e:
-                logging.error(f"An error occurred: {str(e)}")
-                return False# code logic here
+        getattr(self, args.command, unknown_command)(args.cabin)
 
 
-def main(log_level):
-    logging.basicConfig(level=log_level)
+def main(log_level, cli_instance, logger):
+    """
+    Improved version of the main function.
+
+    Args:
+        log_level (int): The log level to set for the logger.
+        cli_instance (HuntAndGatherCLI): An instance of the HuntAndGatherCLI class.
+        logger (Logger): The logger to use for logging.
+
+    Raises:
+        Exception: If an error occurs during the execution of the CLI.
+
+    """
+    logger.setLevel(log_level)
     try:
-        cli = HuntAndGatherCLI()
-        cli.run()
+        command = cli_instance.get_command()
+        command.execute()
+    except FileNotFoundError as e:
+        logger.error(f"File not found: {str(e)}")
+        raise
+    except PermissionError as e:
+        logger.error(f"Permission denied: {str(e)}")
+        raise
     except Exception as e:
-        logging.exception("An error occurred")
+        logger.exception("An error occurred")
+        raise
+
 
 if __name__ == '__main__':
     main(logging.INFO)
