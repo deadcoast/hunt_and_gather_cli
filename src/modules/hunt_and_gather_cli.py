@@ -372,7 +372,7 @@ def butcher_command(arg1, arg2):
     return True  # or return False
 
 
-def skin(file, clean):
+def skinner(file, clean):
     """
     This method performs skinning on a given file.
 
@@ -453,7 +453,7 @@ class HuntAndGatherCLI:
     def run(self, map_command=None, skin_command=None, tanner_command=None, tailor_command=None, help_command=None,):
         COMMAND_MAPPING = {
             'map': map_command,
-            'skin': lambda: skin_command(skin(file=self.args.file, clean=self.args.clean, cabin=self.args.cabin)),
+            'skin': lambda: skin_command(skinner(file=self.args.file, clean=self.args.clean)),
             'tanner': lambda: tanner_command(file=self.args.file),
             'tailor': lambda: tailor_command(file=self.args.file, editor=self.args.editor),
             'cabin': lambda: unknown_command(cabin=True),
