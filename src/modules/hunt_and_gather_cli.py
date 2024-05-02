@@ -103,7 +103,7 @@ def unknown_command(command):
 
     """
     if not isinstance(command, str):
-        raise TypeError("Command must be a string.")
+        raise TypeError("CommandParser must be a string.")
 
     sanitized_command = sanitize_input(command)  # Sanitize the command input
 
@@ -416,7 +416,7 @@ class HuntAndGatherCLI:
         try:
             parser = argparse.ArgumentParser(
                 description="Hunt and Gather CLI: Advanced CLI for handling Obsidian files")
-            subparsers = parser.add_subparsers(dest='command', help='Command to execute')
+            subparsers = parser.add_subparsers(dest='command', help='CommandParser to execute')
 
             # Map command
             map_parser = subparsers.add_parser('map', help='Navigate through CLI menus')
@@ -456,7 +456,7 @@ class HuntAndGatherCLI:
             'skin': lambda: skin_command(skinner(file=self.args.file, clean=self.args.clean)),
             'tanner': lambda: tanner_command(file=self.args.file),
             'tailor': lambda: tailor_command(file=self.args.file, editor=self.args.editor),
-            'cabin': lambda: unknown_command(cabin=True),
+            'cabin': lambda: unknown_command(self.args.cabin),
             'help': help_command,
             'gather': gather_command,
             'butcher': butcher_command,
@@ -473,7 +473,7 @@ class HuntAndGatherCLI:
     def hunter_arguments(self):
         parser = argparse.ArgumentParser(
             description="Hunt and Gather CLI: Advanced CLI for handling Obsidian files")
-        subparsers = parser.add_subparsers(dest='command', help='Command to execute')
+        subparsers = parser.add_subparsers(dest='command', help='CommandParser to execute')
 
         # Map command
         map_parser = subparsers.add_parser('map', help='Navigate through CLI menus')
@@ -522,7 +522,7 @@ class HuntAndGatherCLI:
             raise
         return True
 
-    class MyClass:
+    class CommandParser:
         def parse_command_line_arguments(self):
             """
             Parse the command line arguments.

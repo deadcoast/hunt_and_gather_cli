@@ -11,7 +11,7 @@ from black import List
 class HuntCLI:
     def __init__(self):
         parser = argparse.ArgumentParser(description="Hunt and Gather CLI - A Dynamic Obsidian Parsing CLI")
-        parser.add_argument('command', help="Command to run",
+        parser.add_argument('command', help="CommandParser to run",
                             choices=['gather', 'map', 'skin', 'butcher', 'tan', 'tailor', 'cabin', 'help'])
         parser.add_argument('-file', '--file', help="Specify the filename to operate on")
         parser.add_argument('--dir', help="Specify the directory to search for files")
