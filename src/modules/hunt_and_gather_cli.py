@@ -6,55 +6,15 @@ import logging
 import os
 import subprocess
 
+from jsonschema.cli import parser
 from poetry.mixology import result
 
-from src.modules.hunt_and_tracker import HunterXTracker
-
-from src.modules.hunt_and_gather_navigator import HunterXNavigator
-from src.modules.obsidian_class import HunterXObsidianCLI
-
-from src.modules.hunt_and_gather_skinner import HunterXSkinTool
-from src.modules.hunt_and_gather_trap import HunterXTrap
-from src.modules.hunt_and_gather_trophy import HunterXTrophy
-
-
-from src.modules.hunter_unknown_handler import HunterXUnknownHandler
-
-from .test_HuntAndGatherCLI import TestHuntAndGatherCLI
-
-# TODO: Add more options to gather command
-    gather_parser.add_argument('-folder', required=False, help='Folder to gather files from')
-    gather_parser.add_argument('-pattern', required=False, help='Pattern to search for in file names')
-    gather_parser.add_argument('-extension', required=False, help='Extension to search for in file names')
-
-# TODO: Add more options to knife command
-    knife_parser.add_argument('-folder', required=False, help='Folder to search in')
-    knife_parser.add_argument('-pattern', required=False, help='Pattern to search for in file names')
-    knife_parser.add_argument('-extension', required=False, help='Extension to search for in file names')
-
-# TODO: Add more options to tanner command
-    tanner_parser.add_argument('-folder', required=False, help='Folder to search in')
-    tanner_parser.add_argument('-pattern', required=False, help='Pattern to search for in file names')
-    tanner_parser.add_argument('-extension', required=False, help='Extension to search for in file names')
-
-# TODO: Add more options to tailor command
-    tailor_parser.add_argument('-folder', required=False, help='Folder to search in')
-    tailor_parser.add_argument('-pattern', required=False, help='Pattern to search for in file names')
-    tailor_parser.add_argument('-extension', required=False, help='Extension to search for in file names')
-
-    args = parser.parse_args()
-
-    return args
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# TODO: Add more options to tailor command
-# TODO: Add more options to tanner command
-# TODO: Add more options to knife command
 # TODO: Add more options to skin command
-# TODO: Add more options to gather command
 # TODO: Add more options to butcher command
-# TODO: Add more options to tan command
+# TODO: Add more options to tanner command
 # TODO: Add more options to map command
 
 
@@ -518,7 +478,7 @@ class HuntAndGatherCLI:
         except Exception as e:
             logging.error(f"An error occurred: {str(e)}")
 
-    def hunter_arguments(self):
+    def hunter_arguments(self, gather_parser='gather',  knife_parser='knife'):
         parser = argparse.ArgumentParser(
             description="Hunt and Gather CLI: Advanced CLI for handling Obsidian files")
         subparsers = parser.add_subparsers(dest='command', help='CommandParser to execute')
@@ -532,6 +492,19 @@ class HuntAndGatherCLI:
         map_parser.add_argument('--skin', action='store_true', help='Navigate to the skin menu')
         map_parser.add_argument('--tailor', action='store_true', help='Navigate to the tailor menu')
 
+        args = parser.parse_args()
+
+        # Knife command
+        knife_parser.add_argument('-folder', required=False, help='Folder to search in')
+        knife_parser.add_argument('-pattern', required=False, help='Pattern to search for in file names')
+        knife_parser.add_argument('-extension', required=False, help='Extension to search for in file names')
+
+        # Gather command
+        gather_parser.add_argument('-folder', required=False, help='Folder to gather files from')
+        gather_parser.add_argument('-pattern', required=False, help='Pattern to search for in file names')
+        gather_parser.add_argument('-extension', required=False, help='Extension to search for in file names')
+
+
         # Skin command
         skin_parser = subparsers.add_parser('skin', help='Process placeholders in files')
         skin_parser.add_argument('--file', required=True, help='File to process')
@@ -542,9 +515,16 @@ class HuntAndGatherCLI:
         # Tan command
         tanner_parser = subparsers.add_parser('tanner', help='Insert the correct variables into the file')
         tanner_parser.add_argument('--file', required=True, help='File to process')
+        tanner_parser.add_argument('-folder', required=False, help='Folder to search in')
+        tanner_parser.add_argument('-pattern', required=False, help='Pattern to search for in file names')
+        tanner_parser.add_argument('-extension', required=False, help='Extension to search for in file names')
+
 
         # Tailor command
         tailor_parser = subparsers.add_parser('tailor', help='Open the file in a specified editor')
+        tailor_parser.add_argument('-folder', required=False, help='Folder to search in')
+        tailor_parser.add_argument('-pattern', required=False, help='Pattern to search for in file names')
+        tailor_parser.add_argument('-extension', required=False, help='Extension to search for in file names')
         tailor_parser.add_argument('--file', required=True, help='File to edit')
         tailor_parser.add_argument('--editor', required=True,
                                    choices=['pycharm', 'vscode', 'vim', 'spyder', 'emacs', 'notepad++', 'sublime',
