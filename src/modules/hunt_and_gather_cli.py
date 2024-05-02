@@ -10,13 +10,13 @@ from poetry.mixology import result
 from pydantic._internal._decorators import ReturnType
 
 
-def hunter_map_navigation(cabin=False, hunt=False, knife=False, tan=False, skin=False, tailor=False):
+def hunter_map_navigation(cabin=False, hunt=False, knife=False, tanner=False, skin=False, tailor=False):
     try:
         command_messages = {
             'cabin': "Navigating to the cabin (main menu)...",
             'hunt': "Navigating to the hunt menu...",
             'knife': "Navigating to the knife menu...",
-            'tan': "Navigating to the tan menu...",
+            'tanner': "Navigating to the tanner menu...",
             'skin': "Navigating to the skin menu...",
             'tailor': "Navigating to the tailor menu..."
         }
@@ -274,9 +274,9 @@ def skin_command(param1, param2):
     return result
 
 
-def tan_command(angle):
+def tanner_command(angle):
     """
-    This function calculates the tangent of a given angle.
+    This function calculates the tannergent of a given angle.
     """
     with contextlib.suppress(Exception):
         return ...
@@ -329,7 +329,7 @@ def gather_command():
         pass
 
 
-def my_map(cabin, hunt, knife, tan, skin, tailor):
+def my_map(cabin, hunt, knife, tanner, skin, tailor):
     """
     This function maps the input arguments to specific values or strings.
     
@@ -337,7 +337,7 @@ def my_map(cabin, hunt, knife, tan, skin, tailor):
         cabin (bool): Indicates if cabin is true or false.
         hunt (bool): Indicates if hunt is true or false.
         knife (bool): Indicates if knife is true or false.
-        tan (bool): Indicates if tan is true or false.
+        tanner (bool): Indicates if tanner is true or false.
         skin (bool): Indicates if skin is true or false.
         tailor (bool): Indicates if tailor is true or false.
         
@@ -350,14 +350,14 @@ def my_map(cabin, hunt, knife, tan, skin, tailor):
         return 2
     elif knife:
         return 3
-    elif tan:
+    elif tanner:
         return 4
     elif skin:
         return 5
     elif tailor:
-        return ['--cabin', '--hunt', '--knife', '--tan', '--skin', '--tailor']
+        return ['--cabin', '--hunt', '--knife', '--tanner', '--skin', '--tailor']
     else:
-        return ['--cabin', '--hunt', '--knife', '--tan', '--skin', '--tailor']
+        return ['--cabin', '--hunt', '--knife', '--tanner', '--skin', '--tailor']
 
 
 def butcher_command(arg1, arg2):
@@ -372,43 +372,41 @@ def butcher_command(arg1, arg2):
     return True  # or return False
 
 
-def skin(file, clean, cabin):
+def skin(file, clean):
     """
     This method performs skinning on a given file.
 
     Args:
         file (str): The path of the file to be skinned.
         clean (bool): A flag indicating whether to perform a clean skinning.
-        cabin (bool): A flag indicating whether to return to the main menu after skinning.
 
     Returns:
-        bool: True if the skinning operation was successful, False otherwise.
+        int: The number of lines processed if the skinning operation was successful, -1 otherwise.
     """
     try:
         logging.info(f"Starting skinning process for file: {file}")
 
         if not os.path.exists(file):
-            logging.error(f"File {file} does not exist.")
-            return False
+            raise FileNotFoundError(f"File {file} does not exist.")
 
         if not os.access(file, os.R_OK):
-            logging.error(f"File {file} is not readable.")
-            return False
+            raise PermissionError(f"File {file} is not readable.")
 
         if clean:
             logging.info(f"Cleaning {file}...")
         else:
             logging.info(f"Processing {file} for skinning...")
 
-        if cabin:
-            logging.info("Returning to the main menu...")
+        # Perform skinning process and return the number of lines processed
+        num_lines_processed = 0
+        # ...
 
         logging.info(f"Finished skinning process for file: {file}")
-        return True
+        return num_lines_processed
 
     except Exception as e:
         logging.error(f"An error occurred: {str(e)}")
-        return False  # code logic here
+        return -1
 
 
 class HuntAndGatherCLI:
@@ -425,7 +423,7 @@ class HuntAndGatherCLI:
             map_parser.add_argument('-cabin', action='store_true', help='Navigate to the root menu')
             map_parser.add_argument('--hunt', action='store_true', help='Navigate to the hunt menu')
             map_parser.add_argument('--knife', action='store_true', help='Navigate to the knife menu')
-            map_parser.add_argument('--tan', action='store_true', help='Navigate to the tan menu')
+            map_parser.add_argument('--tanner', action='store_true', help='Navigate to the tanner menu')
             map_parser.add_argument('--skin', action='store_true', help='Navigate to the skin menu')
             map_parser.add_argument('--tailor', action='store_true', help='Navigate to the tailor menu')
 
@@ -437,8 +435,8 @@ class HuntAndGatherCLI:
             skin_parser.add_argument('--cabin', action='store_true', help='Return to the main menu after processing')
 
             # Tan command
-            tan_parser = subparsers.add_parser('tan', help='Insert the correct variables into the file')
-            tan_parser.add_argument('--file', required=True, help='File to process')
+            tanner_parser = subparsers.add_parser('tanner', help='Insert the correct variables into the file')
+            tanner_parser.add_argument('--file', required=True, help='File to process')
 
             # Tailor command
             tailor_parser = subparsers.add_parser('tailor', help='Open the file in a specified editor')
@@ -452,11 +450,11 @@ class HuntAndGatherCLI:
         except Exception as e:
             logging.error(f"An error occurred: {str(e)}")
 
-    def run(self):
+    def run(self, map_command=None, skin_command=None, tanner_command=None, tailor_command=None, help_command=None,):
         COMMAND_MAPPING = {
             'map': map_command,
             'skin': lambda: skin_command(skin(file=self.args.file, clean=self.args.clean, cabin=self.args.cabin)),
-            'tan': lambda: tan_command(file=self.args.file),
+            'tanner': lambda: tanner_command(file=self.args.file),
             'tailor': lambda: tailor_command(file=self.args.file, editor=self.args.editor),
             'cabin': lambda: unknown_command(cabin=True),
             'help': help_command,
@@ -482,7 +480,7 @@ class HuntAndGatherCLI:
         map_parser.add_argument('-cabin', action='store_true', help='Navigate to the root menu')
         map_parser.add_argument('--hunt', action='store_true', help='Navigate to the hunt menu')
         map_parser.add_argument('--knife', action='store_true', help='Navigate to the knife menu')
-        map_parser.add_argument('--tan', action='store_true', help='Navigate to the tan menu')
+        map_parser.add_argument('--tanner', action='store_true', help='Navigate to the tanner menu')
         map_parser.add_argument('--skin', action='store_true', help='Navigate to the skin menu')
         map_parser.add_argument('--tailor', action='store_true', help='Navigate to the tailor menu')
 
@@ -494,8 +492,8 @@ class HuntAndGatherCLI:
         skin_parser.add_argument('--cabin', action='store_true', help='Return to the main menu after processing')
 
         # Tan command
-        tan_parser = subparsers.add_parser('tan', help='Insert the correct variables into the file')
-        tan_parser.add_argument('--file', required=True, help='File to process')
+        tanner_parser = subparsers.add_parser('tanner', help='Insert the correct variables into the file')
+        tanner_parser.add_argument('--file', required=True, help='File to process')
 
         # Tailor command
         tailor_parser = subparsers.add_parser('tailor', help='Open the file in a specified editor')
@@ -507,8 +505,63 @@ class HuntAndGatherCLI:
         args = parser.parse_args()
         getattr(self, args.command, unknown_command)(args.cabin)
 
+    def get_command(self):
+        if self.command is None:
+            self.hunter_arguments()
+        return self.command
 
-def main(log_level, cli_instance, logger):
+    def execute(self):
+        try:
+            self.parse_command_line_arguments()
+        except FileNotFoundError as e:
+            logging.error(f"File not found: {str(e)}")
+        except PermissionError as e:
+            logging.error(f"Permission denied: {str(e)}")
+        except Exception as e:
+            logging.exception("An error occurred")
+            raise
+        return True
+
+    class MyClass:
+        def parse_command_line_arguments(self):
+            """
+            Parse the command line arguments.
+
+            Returns:
+                Parsed arguments for further processing.
+
+            """
+            try:
+                parser = argparse.ArgumentParser(description="Hunt and Gather CLI: Advanced CLI for handling Obsidian files")
+                parser.add_argument(...)
+                args = parser.parse_args()
+                # process the parsed arguments
+                return args
+            except Exception as e:
+                logging.error(f"An error occurred during argument parsing: {str(e)}")
+
+    def parse_command_line_arguments(self):
+        try:
+            parser = argparse.ArgumentParser(description="Hunt and Gather CLI: Advanced CLI for handling Obsidian files")
+            parser.add_argument(...)
+            args = parser.parse_args()
+        
+            # Validate file paths
+            if not os.path.exists(args.file):
+                logging.error(f"File {args.file} does not exist.")
+                return
+            if not os.access(args.file, os.R_OK):
+                logging.error(f"File {args.file} is not readable.")
+                return
+        
+            return args
+        except argparse.ArgumentError as e:
+            logging.error(f"An error occurred during argument parsing: {str(e)}")
+        except Exception as e:
+            logging.error(f"An error occurred during argument parsing: {str(e)}")
+
+
+def main(log_level, logger, cli_instance=None):
     """
     Improved version of the main function.
 
