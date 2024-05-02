@@ -4,8 +4,7 @@ import logging
 import os
 import re
 from black import List, Any
-import isdigit as isdigit
-from main import get_file_path
+from src.main import get_file_path
 
 
 class HunterXTracker:
