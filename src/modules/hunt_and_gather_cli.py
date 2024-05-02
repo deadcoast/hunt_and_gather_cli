@@ -433,6 +433,10 @@ def skinner(file, clean):
         return -1
 
 
+def tanner_command(file):
+    pass
+
+
 class HuntAndGatherCLI:
     def __init__(self):
         self.args = None
@@ -498,7 +502,10 @@ class HuntAndGatherCLI:
         except Exception as e:
             logging.error(f"An error occurred: {str(e)}")
 
-    def hunter_arguments(self, gather_parser='gather',  knife_parser='knife'):
+    def unknown_command(cabin):
+
+
+    def hunter_arguments(self):
         parser = argparse.ArgumentParser(
             description="Hunt and Gather CLI: Advanced CLI for handling Obsidian files")
         subparsers = parser.add_subparsers(dest='command', help='CommandParser to execute')
@@ -512,18 +519,17 @@ class HuntAndGatherCLI:
         map_parser.add_argument('--skin', action='store_true', help='Navigate to the skin menu')
         map_parser.add_argument('--tailor', action='store_true', help='Navigate to the tailor menu')
 
-        args = parser.parse_args()
-
         # Knife command
+        knife_parser = argparse.ArgumentParser()
         knife_parser.add_argument('-folder', required=False, help='Folder to search in')
         knife_parser.add_argument('-pattern', required=False, help='Pattern to search for in file names')
         knife_parser.add_argument('-extension', required=False, help='Extension to search for in file names')
 
         # Gather command
+        gather_parser = argparse.ArgumentParser()
         gather_parser.add_argument('-folder', required=False, help='Folder to gather files from')
         gather_parser.add_argument('-pattern', required=False, help='Pattern to search for in file names')
         gather_parser.add_argument('-extension', required=False, help='Extension to search for in file names')
-
 
         # Skin command
         skin_parser = subparsers.add_parser('skin', help='Process placeholders in files')
@@ -531,8 +537,6 @@ class HuntAndGatherCLI:
         skin_parser.add_argument('--clean', action='store_true',
                                  help='Remove placeholders and leave the file blank')
         skin_parser.add_argument('--cabin', action='store_true', help='Return to the main menu after processing')
-
-
 
         # Tailor command
         tailor_parser = subparsers.add_parser('tailor', help='Open the file in a specified editor')
@@ -545,7 +549,19 @@ class HuntAndGatherCLI:
                                             'atom', 'notepad'], help='Editor to use')
 
         args = parser.parse_args()
-        getattr(self, args.command, unknown_command)(args.cabin)
+
+        if args.command == 'map':
+            map_command()
+        elif args.command == 'skin':
+            skin_command(skinner(file=args.file, clean=args.clean))
+        elif args.command == 'tanner':
+            tanner_command(file=args.file)
+        elif args.command == 'tailor':
+            tailor_command(file=args.file, editor=args.editor)
+        elif args.command == 'cabin':
+            unknown_command(args.cabin)
+        else:
+            unknown_command(args.cabin)
 
     def get_command(self):
         if self.command is None:
