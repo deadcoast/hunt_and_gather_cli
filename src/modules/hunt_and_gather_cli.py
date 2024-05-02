@@ -15,12 +15,6 @@ from pydantic._internal._decorators import ReturnType
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# TODO: Add more options to skin command
-# TODO: Add more options to butcher command
-# TODO: Add more options to tanner command
-# TODO: Add more options to map command
-
-
 def hunter_map_navigation(cabin=False, hunt=False, knife=False, tanner=False, skin=False, tailor=False):
     try:
         command_messages = {
@@ -507,43 +501,59 @@ class HuntAndGatherCLI:
         except Exception as e:
             logging.error(f"An error occurred: {str(e)}")
 
-    class UnknownCommandError(Exception):
-        pass
+class UnknownCommandError(ValueError):
+    """
+    Exception raised when an unknown command is encountered.
+    
+    This exception should be raised when a command is received that is not recognized or supported.
+    """
+    def __init__(self, message):
+        super().__init__(message)
+        self.message = message
+    
+    def __str__(self):
+        return "Unknown command error: {}".format(self.args[0])
+    
+    def suggest_solution(self):
+        return "Please check the command syntax or consult the documentation for available commands."
+    
+    def get_error_details(self):
+        return "Unknown command error occurred."
 
-    class HuntAndGatherCLI:
-        COMMAND_MAPPING = {
-            'map': map_command,
-            'skin': skin_command,
-            'tanner': tanner_command,
-            'tailor': tailor_command,
-            'cabin': unknown_command,
-        }
-        
+class HuntAndGatherCLI:
+    COMMAND_MAPPING = {
+        'map': map_command,
+        'skin': skin_command,
+        'tanner': tanner_command,
+        'tailor': tailor_command,
+        'cabin': unknown_command,
+    }
+    
 
-        def run(self, command, map_cmd=None, skin_cmd=None, tanner_cmd=None, tailor_cmd=None, help_cmd=None):
-            def gather_command():
-                raise NotImplementedError("Gather command")
+    def run(self, command, map_cmd=None, skin_cmd=None, tanner_cmd=None, tailor_cmd=None, help_cmd=None):
+        def gather_command():
+            raise NotImplementedError("Gather command")
 
-            def butcher_command():
-                ...
+        def butcher_command():
+            ...
 
-            def map_command():
-                map_cmd()
+        def map_command():
+            map_cmd()
 
-            def skin_command():
-                skin_cmd(skinner(file=command.file, clean=command.clean))
+        def skin_command():
+            skin_cmd(skinner(file=command.file, clean=command.clean))
 
-            def tanner_command():
-                tanner_cmd(file=command.file)
+        def tanner_command():
+            tanner_cmd(file=command.file)
 
-            def tailor_command():
-                tailor_cmd(file=command.file, editor=command.editor)
+        def tailor_command():
+            tailor_cmd(file=command.file, editor=command.editor)
 
-            command_function = self.COMMAND_MAPPING.get(command)
-            if callable(command_function):
-                return command_function()
+        command_function = self.COMMAND_MAPPING.get(command)
+        if callable(command_function):
+            return command_function()
 
-            return self.hunter_arguments()
+        return self.hunter_arguments()
 
         def gather_command(self):
             raise NotImplementedError("Gather command")
