@@ -692,7 +692,17 @@ class HuntAndGatherCLI:
         return True
 
     class CommandParser:
+        @staticmethod
         def parse_command_line_arguments(self):
+            try:
+                parser = argparse.ArgumentParser(
+                    description="Hunt and Gather CLI: Advanced CLI for handling Obsidian files")
+                parser.add_argument(...)
+                args = parser.parse_args()
+                # process the parsed arguments
+                return args
+            except Exception as e:
+                logging.error(f"An error occurred during argument parsing: {str(e)}")
             """
             Parse the command line arguments.
 
@@ -728,6 +738,38 @@ class HuntAndGatherCLI:
             logging.error(f"An error occurred during argument parsing: {str(e)}")
         except Exception as e:
             logging.error(f"An error occurred during argument parsing: {str(e)}")
+
+    def parse_arguments(self):
+        parser = argparse.ArgumentParser(description="Hunt and Gather CLI: Advanced CLI for handling Obsidian files")
+        subparsers = parser.add_subparsers(dest='command', help='CommandParser to execute')
+
+        map_parser = subparsers.add_parser('map', help='Navigate through CLI menus')
+        map_parser.add_argument('-cabin', action='store_true', help='Navigate to the root menu')
+        map_parser.add_argument('--hunt', action='store_true', help='Navigate to the hunt menu')
+        map_parser.add_argument('--knife', action='store_true', help='Navigate to the knife menu')
+        map_parser.add_argument('--tanner', action='store_true', help='Navigate to the tanner menu')
+        map_parser.add_argument('--skin', action='store_true', help='Navigate to the skin menu')
+        map_parser.add_argument('--tailor', action='store_true', help='Navigate to the tailor menu')
+
+        skin_parser = subparsers.add_parser('skin', help='Process placeholders in files')
+        skin_parser.add_argument('--file', required=True, help='File to process')
+        skin_parser.add_argument('--clean', action='store_true', help='Remove placeholders and leave the file blank')
+        skin_parser.add_argument('--cabin', action='store_true', help='Return to the main menu after processing')
+
+        tanner_parser = subparsers.add_parser('tanner', help='Insert the correct variables into the file')
+        tanner_parser.add_argument('--file', required=True, help='File to process')
+        tanner_parser.add_argument('-folder', required=False, help='Folder to search in')
+        tanner_parser.add_argument('-pattern', required=False, help='Pattern to search for in file names')
+        tanner_parser.add_argument('-extension', required=False, help='Extension to search for in file names')
+
+        tailor_parser = subparsers.add_parser('tailor', help='Open the file in a specified editor')
+        tailor_parser.add_argument('--file', required=True, help='File to edit')
+        tailor_parser.add_argument('--editor', required=True,
+                                   choices=['pycharm', 'vscode', 'vim', 'spyder', 'emacs', 'notepad++', 'sublime',
+                                            'atom', 'notepad'], help='Editor to use')
+
+        args = parser.parse_args()
+        getattr(self, args.command, unknown_command)(args.cabin)
 
 
 def main(log_level, cli_instance):
