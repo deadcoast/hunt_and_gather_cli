@@ -1,12 +1,12 @@
-class HunterXUnknownHandler(Exception):
-    UNKNOWN_COMMAND_MESSAGE = "Unknown command. Please try again."
+import logging
+class HunterXUnknownHandler(ValueError):
+    __UNKNOWN_COMMAND_MESSAGE = "Unknown command. Please try again."
 
-    def unknown_command(self, command=None):
+    def handle_unknown_command(self, command=None):
         """
         This method handles unknown commands.
         """
         if command:
-            logging.warning(f"Unknown command: {command}. Please try again.")
+            raise ValueError(f"Unknown command: {command}. Please try again.")
         else:
-            logging.warning(self.UNKNOWN_COMMAND_MESSAGE)
-        return False
+            raise ValueError(self.__UNKNOWN_COMMAND_MESSAGE)

@@ -18,9 +18,7 @@ from src.modules.hunt_and_gather_trap import HunterXTrap
 from src.modules.hunt_and_gather_trophy import HunterXTrophy
 
 
-from src.modules.hunter_unknown_handler import unknown_command
-
-from src.modules.hunt_and_gather_skin import skin
+from src.modules.hunter_unknown_handler import HunterXUnknownHandler
 
 from .test_HuntAndGatherCLI import TestHuntAndGatherCLI
 
