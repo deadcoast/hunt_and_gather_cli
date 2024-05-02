@@ -1,3 +1,4 @@
+from numbers import Real
 import math
 import argparse
 import contextlib
@@ -283,20 +284,27 @@ def skin_command(param1, param2):
     return result
 
 
-def calculate_tangent(angle):
+def calculate_tangent(angle: Real):
     """
-    This function calculates the tangent of a given angle.
-    """
-    if not isinstance(angle, (int, float)):
-        raise ValueError("angle must be a number")
-    if angle < -90 or angle > 90:
-        raise ValueError("angle must be within the range of -90 to 90 degrees")
-    with contextlib.suppress(ValueError, ZeroDivisionError):
-        return math.tan(angle)
-    except Exception as e:
-        logging.error(f"Error occurred: {e}")
-        return None
+    Calculate the tangent of a given angle.
 
+    Parameters:
+    - angle: The angle in degrees.
+
+    Returns:
+    - The tangent of the angle.
+
+    Raises:
+    - ValueError: If the angle is not a number or is outside the range of -90 to 90 degrees.
+    """
+    angle = angle % 180  # Convert angle to a value within the range of -90 to 90 degrees
+    if angle > 90:
+        angle -= 180
+    try:
+        return math.tan(math.radians(angle))
+    except (ValueError, ZeroDivisionError) as e:
+        raise ValueError("Error calculating tangent: " + str(e))
+    
 
 def tailor_command(param1, param2):
     """
