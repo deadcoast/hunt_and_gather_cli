@@ -512,7 +512,7 @@ class HuntAndGatherCLI:
                                  help='Remove placeholders and leave the file blank')
         skin_parser.add_argument('--cabin', action='store_true', help='Return to the main menu after processing')
 
-        # Tan command
+        # Tanner command
         tanner_parser = subparsers.add_parser('tanner', help='Insert the correct variables into the file')
         tanner_parser.add_argument('--file', required=True, help='File to process')
         tanner_parser.add_argument('-folder', required=False, help='Folder to search in')
