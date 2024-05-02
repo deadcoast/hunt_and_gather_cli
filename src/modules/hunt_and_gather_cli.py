@@ -437,6 +437,10 @@ def tanner_command(file):
     pass
 
 
+def map_command():
+    pass
+
+
 class HuntAndGatherCLI:
     def __init__(self):
         self.args = None
@@ -482,27 +486,54 @@ class HuntAndGatherCLI:
         except Exception as e:
             logging.error(f"An error occurred: {str(e)}")
 
-    def run(self, map_command=None, skin_command=None, tanner_command=None, tailor_command=None, help_command=None,):
+    def run(self, command, map_command=None, skin_command=None, tanner_command=None, tailor_command=None, help_command=None):
+        def unknown_command():
+            ...
+
+        def gather_command():
+            ...
+
+        def butcher_command():
+            ...
+
+        def map_command():
+            map_command()
+
+        def skin_command():
+            skin_command(skinner(file=command.file, clean=command.clean))
+
+        def tanner_command():
+            tanner_command(file=command.file)
+
+        def tailor_command():
+            tailor_command(file=command.file, editor=command.editor)
+
         COMMAND_MAPPING = {
             'map': map_command,
-            'skin': lambda: skin_command(skinner(file=self.args.file, clean=self.args.clean)),
-            'tanner': lambda: tanner_command(file=self.args.file),
-            'tailor': lambda: tailor_command(file=self.args.file, editor=self.args.editor),
-            'cabin': lambda: unknown_command(self.args.cabin),
+            'skin': skin_command,
+            'tanner': tanner_command,
+            'tailor': tailor_command,
+            'cabin': lambda: unknown_command(command.cabin),
             'help': help_command,
             'gather': gather_command,
             'butcher': butcher_command,
         }
 
-        command_function = COMMAND_MAPPING.get(self.command, unknown_command)
+        command_function = COMMAND_MAPPING.get(command)
         command_function()
 
         try:
             self.hunter_arguments()
+        except FileNotFoundError as e:
+            logging.error(f"File not found: {str(e)}")
+        except PermissionError as e:
+            logging.error(f"Permission denied: {str(e)}")
         except Exception as e:
-            logging.error(f"An error occurred: {str(e)}")
+            logging.exception("An error occurred")
+            raise
 
     def unknown_command(cabin):
+        pass
 
 
     def hunter_arguments(self):
@@ -550,13 +581,31 @@ class HuntAndGatherCLI:
 
         args = parser.parse_args()
 
-        if args.command == 'map':
+        COMMAND_MAPPING = {
+            'map': map_command,
+            'skin': lambda: skin_command(skinner(file=args.file, clean=args.clean)),
+            'tanner': lambda: tanner_command(file=args.file),
+            'tailor': lambda: tailor_command(file=args.file, editor=args.editor),
+            'cabin': lambda: unknown_command(args.cabin),
+        }
+
+        command_function = COMMAND_MAPPING.get(args.command, unknown_command)
+        command_function()
+
+        if args.command is None:
+            # Handle the case when args.command is None
+            ...
+        elif args.command == 'map':
             map_command()
         elif args.command == 'skin':
             skin_command(skinner(file=args.file, clean=args.clean))
         elif args.command == 'tanner':
             tanner_command(file=args.file)
         elif args.command == 'tailor':
+            if args.editor not in ['pycharm', 'vscode', 'vim', 'spyder', 'emacs', 'notepad++', 'sublime',
+                                   'atom', 'notepad']:
+                print(f"Error: Editor '{args.editor}' is not installed.")
+                return
             tailor_command(file=args.file, editor=args.editor)
         elif args.command == 'cabin':
             unknown_command(args.cabin)
