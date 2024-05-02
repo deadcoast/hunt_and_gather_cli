@@ -1,7 +1,17 @@
+import logging
+import os
+import pathlib
+import logging
+import os
 import argparse
 
+from numpy.f2py._src_pyf import process_file
 
-class DynamicObsidianCLI:
+import src
+
+src.path = os.path.dirname(os.path.abspath(__file__))
+from src.modules.hunt_and_gather_skinner import HunterXSkinTool
+class HunterXObsidianCLI:
     def __init__(self):
         self.parser = argparse.ArgumentParser(description='Dynamic Obsidian Parsing CLI')
         subparsers = self.parser.add_subparsers(dest='command', help='Commands')
@@ -35,13 +45,79 @@ class DynamicObsidianCLI:
             getattr(self, args.command)(**vars(args))
 
     def gather(self, user_filename, user_foldername):
-        print(f"Searching for {user_filename} in {user_foldername}...")
+        """
+        Searches for the given filename in the specified folder.
+    
+        Args:
+            user_filename (str): The name of the file to search for.
+            user_foldername (str): The name of the folder to search in.
+        """
+        logging.info(f"Searching for {user_filename} in {user_foldername}...")
+    
+        try:
+            file_path = os.path.join(user_foldername, user_filename)
+            if os.path.exists(file_path):
+                logging.info(f"Found {user_filename} in {user_foldername}.")
+                return True
+            else:
+                logging.info(f"{user_filename} not found in {user_foldername}.")
+                return False
+        except FileNotFoundError:
+            logging.error(f"File {user_filename} not found.")
+            return False
+        except PermissionError:
+            logging.error(f"Permission denied to access {user_filename}.")
+            return False
+       
+    def butcher(file):
+        """
+        Process and parse placeholders in the given file.
 
-    def skin(self, file):
-        print(f"Processing {file} for placeholder parsing...")
+        Args:
+            file (str): The file to process.
+        """
+        try:
+            with open(file, 'r') as f:
+                file_content = f.read()  # Read the file content
+                logging.info(f"Processing {file} for placeholder parsing...")
+                return process_file(file_content)  # Process the file content
+        except FileNotFoundError:
+            logging.error(f"File {file} not found.")
+        except PermissionError:
+            logging.error(f"Permission denied to access {file}.")
+        finally:
+            f.close()
 
-    def butcher(self, file):
-        print(f"Cleaning up {file} by removing specified elements...")
+    class Butcher_Code:
+        def butcher(self, file):
+            """
+            Clean up the specified file by removing specified elements.
+        
+            Args:
+                file (str): The path of the file to be cleaned up.
+        
+            Returns:
+                bool: True if the cleanup is successful, False otherwise.
+            """
+            try:
+                if not os.path.isfile(file):
+                    raise ValueError("Invalid file path")
+            
+                logging.info(f"Cleaning up {file} by removing specified elements...")
+            
+                # Code to remove specified elements from the file
+            
+                logging.info(f"Removed unwanted text elements from {file}.")
+                return True
+            except FileNotFoundError:
+                logging.error(f"File {file} not found.")
+                return False
+            except PermissionError:
+                logging.error(f"Permission denied to access {file}.")
+                return False
+            except Exception as e:
+                logging.error(f"An error occurred while removing unwanted text elements from {file}: {str(e)}")
+                return False
 
     def tanner(self, file):
         print(f"Enhancing {file} by inserting correct variables...")
@@ -52,4 +128,4 @@ class DynamicObsidianCLI:
 
 
 if __name__ == '__main__':
-    cli = DynamicObsidianCLI()
+    cli = HunterXObsidianCLI()

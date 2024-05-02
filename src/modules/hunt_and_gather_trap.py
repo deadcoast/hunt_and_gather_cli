@@ -1,4 +1,4 @@
-class HunterBaitTrap:
+class HunterXTrap:
     def bait(self, function):
         """
         Bait a specific function.

@@ -1,4 +1,4 @@
-class UnknownCommand(Exception):
+class HunterXUnknownHandler(Exception):
     UNKNOWN_COMMAND_MESSAGE = "Unknown command. Please try again."
 
     def unknown_command(self, command=None):

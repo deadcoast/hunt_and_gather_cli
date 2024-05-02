@@ -1,4 +1,4 @@
-class HuntCLINavigator:
+class HunterXNavigator:
     def __init__(self):
         self.commands = {
             'help': self.help_menu,
@@ -50,6 +50,6 @@ class HuntCLINavigator:
 
 
 if __name__ == "__main__":
-    cli_nav = HuntCLINavigator()
+    cli_nav = HunterXNavigator()
     user_input = input("Enter your command: ")
     print(cli_nav.navigate(user_input))

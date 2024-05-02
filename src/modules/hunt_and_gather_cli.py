@@ -7,7 +7,57 @@ import os
 import subprocess
 
 from poetry.mixology import result
-from pydantic._internal._decorators import ReturnType
+
+from src.modules.hunt_and_tracker import HunterXTracker
+
+from src.modules.hunt_and_gather_navigator import HunterXNavigator
+from src.modules.obsidian_class import HunterXObsidianCLI
+
+from src.modules.hunt_and_gather_skinner import HunterXSkinTool
+from src.modules.hunt_and_gather_trap import HunterXTrap
+from src.modules.hunt_and_gather_trophy import HunterXTrophy
+
+
+from src.modules.hunter_unknown_handler import unknown_command
+
+from src.modules.hunt_and_gather_skin import skin
+
+from .test_HuntAndGatherCLI import TestHuntAndGatherCLI
+
+# TODO: Add more options to gather command
+    gather_parser.add_argument('-folder', required=False, help='Folder to gather files from')
+    gather_parser.add_argument('-pattern', required=False, help='Pattern to search for in file names')
+    gather_parser.add_argument('-extension', required=False, help='Extension to search for in file names')
+
+# TODO: Add more options to knife command
+    knife_parser.add_argument('-folder', required=False, help='Folder to search in')
+    knife_parser.add_argument('-pattern', required=False, help='Pattern to search for in file names')
+    knife_parser.add_argument('-extension', required=False, help='Extension to search for in file names')
+
+# TODO: Add more options to tanner command
+    tanner_parser.add_argument('-folder', required=False, help='Folder to search in')
+    tanner_parser.add_argument('-pattern', required=False, help='Pattern to search for in file names')
+    tanner_parser.add_argument('-extension', required=False, help='Extension to search for in file names')
+
+# TODO: Add more options to tailor command
+    tailor_parser.add_argument('-folder', required=False, help='Folder to search in')
+    tailor_parser.add_argument('-pattern', required=False, help='Pattern to search for in file names')
+    tailor_parser.add_argument('-extension', required=False, help='Extension to search for in file names')
+
+    args = parser.parse_args()
+
+    return args
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+# TODO: Add more options to tailor command
+# TODO: Add more options to tanner command
+# TODO: Add more options to knife command
+# TODO: Add more options to skin command
+# TODO: Add more options to gather command
+# TODO: Add more options to butcher command
+# TODO: Add more options to tan command
+# TODO: Add more options to map command
 
 
 def hunter_map_navigation(cabin=False, hunt=False, knife=False, tanner=False, skin=False, tailor=False):
@@ -561,7 +611,7 @@ class HuntAndGatherCLI:
             logging.error(f"An error occurred during argument parsing: {str(e)}")
 
 
-def main(log_level, logger, cli_instance=None):
+def main(log_level, logger, cli_instance):
     """
     Improved version of the main function.
 
@@ -570,26 +620,46 @@ def main(log_level, logger, cli_instance=None):
         cli_instance (HuntAndGatherCLI): An instance of the HuntAndGatherCLI class.
         logger (Logger): The logger to use for logging.
 
-    Raises:
-        Exception: If an error occurs during the execution of the CLI.
+    Returns:
+        bool: True if the CLI execution was successful, False otherwise.
 
     """
-    logger.setLevel(log_level)
     try:
-        command = cli_instance.get_command()
-        command.execute()
+        cli_instance.run()
+        return True
     except FileNotFoundError as e:
         logger.error(f"File not found: {str(e)}")
-        raise
+        return False
     except PermissionError as e:
         logger.error(f"Permission denied: {str(e)}")
-        raise
+        return False
     except Exception as e:
         logger.exception("An error occurred")
-        raise
+        return False
 
 
 if __name__ == '__main__':
-    main(logging.INFO)
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
+    
+    cli = HuntAndGatherCLI()
+    main(log_level=logging.INFO, cli_instance=cli, logger=logger)
+    
+    # Example usage
+    # logger.setLevel(logging.INFO)
+    # cli = HuntAndGatherCLI()
+    # main(log_level=logging.INFO, cli_instance=cli, logger=logger)
+
+    # Example usage with user input for command
+    # logger.setLevel(logging.INFO)
+    # cli = HuntAndGatherCLI()
+    # main(log_level=logging.INFO, cli_instance=cli, logger=logger)
+    # user_input = input("Enter your command : ")
+
+    # Example usage with user input for command and arguments (advanced usage)
+    # logger.setLevel(logging.INFO)
+    # cli = HuntAndGatherCLI()
+    # main(log_level=logging.INFO, cli_instance=cli, logger=logger)
+    # user_input = input("Enter your command : ")
     cli_app = HuntAndGatherCLI()
     user_input = input("Enter your command: ")
