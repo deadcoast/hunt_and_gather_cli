@@ -4,7 +4,7 @@ import logging
 import os
 import re
 from black import List, Any
-from src.main import get_file_path
+from hunt_and_gathercli.src import get_file_path
 
 
 class HunterXTracker:

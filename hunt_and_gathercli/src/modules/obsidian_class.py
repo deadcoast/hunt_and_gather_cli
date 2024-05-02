@@ -1,16 +1,14 @@
 import logging
 import os
-import pathlib
-import logging
-import os
 import argparse
 
 from numpy.f2py._src_pyf import process_file
 
-import src
+from hunt_and_gathercli import src
 
 src.path = os.path.dirname(os.path.abspath(__file__))
-from src.modules.hunt_and_gather_skinner import HunterXSkinTool
+
+
 class HunterXObsidianCLI:
     def __init__(self):
         self.parser = argparse.ArgumentParser(description='Dynamic Obsidian Parsing CLI')
