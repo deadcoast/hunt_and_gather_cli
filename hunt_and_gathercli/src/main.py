@@ -2,6 +2,33 @@ import argparse
 import logging
 import os
 import re
+import tokenize
+
+from cffi.setuptools_ext import execfile
+
+from hunt_and_gathercli.src import get_file_path
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+path = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(path)
+
+logging.info(f"Path: {path}")
+
+logging.info("Hunt and Gather CLI - A Dynamic Obsidian Parsing CLI")
+
+logging.info("Loading modules...")
+execfile(os.path.join(path, 'modules', 'hunt_and_gather_trap.py'))
+execfile(os.path.join(path, 'modules', 'hunt_and_gather_decoy.py'))
+execfile(os.path.join(path, 'modules', 'hunt_and_gather_blind.py'))
+execfile(os.path.join(path, 'modules', 'hunt_and_gather_trophy.py'))
+
+logging.info("Modules loaded.")
+
+logging.info("Loading modules...")
+execfile(os.path.join(path, 'modules', 'hunt_and_gather_cli.py'))
+execfile(os.path.join(path, 'modules', 'hunt_and_gather_trophy.py'))
+logging.info("Modules loaded.")
 
 
 class HuntCLI:
@@ -86,6 +113,25 @@ class HuntCLI:
     def help(self):
         # Original help method code here
         pass
+
+    # We must redefine it in Py3k if it's not already there
+    def execfile(file, glob=None, loc=None):
+        if glob is None:
+            import sys
+            glob = sys._getframe().f_back.f_globals
+        if loc is None:
+            loc = glob
+
+        # It seems that the best way is using tokenize.open(): http://code.activestate.com/lists/python-dev/131251/
+        tokenize.open(__file__)# @UndefinedVariable
+        stream = tokenize.open(file)  # @UndefinedVariable
+        try:
+            contents = stream.read()
+        finally:
+            stream.close()
+
+        # execute the script (note: it's important to compile first to have the filename set in debug mode)
+        exec(compile(contents + "\n", file, 'exec'), glob, loc)
 
     def parse_args(self):
         parser = argparse.ArgumentParser(description="HuntCLI - Hunting for Code, Gathering Results")
