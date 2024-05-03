@@ -40,7 +40,10 @@ def camouflage(obfuscation_level, code):
             raise ValueError("Obfuscation level must be an integer between 1 and 10")
 
         # Implement obfuscation logic here
-        obfuscated_code = obfuscation_level(code)
+        HuntXGatherTrap = HunterXTrap()
+        obfuscated_code = HuntXGatherTrap.bait(code)
+        # obfuscated_code = "Obfuscated code"
+
 
         logging.info(f"Camouflaging code with level {obfuscation_level}")
         return obfuscated_code
