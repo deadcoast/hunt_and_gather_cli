@@ -67,7 +67,7 @@ class HunterXObsidianCLI:
             logging.error(f"Permission denied to access {user_filename}.")
             return False
        
-    def butcher(file):
+    def butcher(self):
         """
         Process and parse placeholders in the given file.
 
@@ -75,14 +75,14 @@ class HunterXObsidianCLI:
             file (str): The file to process.
         """
         try:
-            with open(file, 'r') as f:
+            with open(self, 'r') as f:
                 file_content = f.read()  # Read the file content
-                logging.info(f"Processing {file} for placeholder parsing...")
+                logging.info(f"Processing {self} for placeholder parsing...")
                 return process_file(file_content)  # Process the file content
         except FileNotFoundError:
-            logging.error(f"File {file} not found.")
+            logging.error(f"File {self} not found.")
         except PermissionError:
-            logging.error(f"Permission denied to access {file}.")
+            logging.error(f"Permission denied to access {self}.")
         finally:
             f.close()
 

@@ -39,9 +39,7 @@ class HunterXTrap:
         logging.info(f"Baiting function: {function.__name__}")
         # Interact with the function being baited
         result = function()
-        # Modify the result or perform other actions
-        modified_result = result + " modified"
-        return modified_result
+        return f"{result} modified"
     
     def camouflage(self, obfuscation_level, code):
         """

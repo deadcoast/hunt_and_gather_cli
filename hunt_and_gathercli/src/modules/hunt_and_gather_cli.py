@@ -298,7 +298,7 @@ def calculate_tangent(angle: Real):
     try:
         return math.tan(math.radians(angle))
     except (ValueError, ZeroDivisionError) as e:
-        raise ValueError("Error calculating tangent: " + str(e))
+        raise ValueError(f"Error calculating tangent: {str(e)}") from e
     
 
 def tailor_command(param1, param2):
@@ -416,13 +416,10 @@ def skinner(file, clean):
         else:
             logging.info(f"Processing {file} for skinning...")
 
-        # Perform skinning process and return the number of lines processed
-        num_lines_processed = 0
         # ...
 
         logging.info(f"Finished skinning process for file: {file}")
-        return num_lines_processed
-
+        return 0
     except Exception as e:
         logging.error(f"An error occurred: {str(e)}")
         return -1
@@ -512,7 +509,7 @@ class UnknownCommandError(ValueError):
         self.message = message
     
     def __str__(self):
-        return "Unknown command error: {}".format(self.args[0])
+        return f"Unknown command error: {self.args[0]}"
     
     def suggest_solution(self):
         return "Please check the command syntax or consult the documentation for available commands."

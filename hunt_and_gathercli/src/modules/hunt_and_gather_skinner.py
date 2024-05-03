@@ -105,12 +105,11 @@ class HunterXSkinTool:
     def __str__(self):
         if self.code_lines is None or len(self.code_lines) == 0:
             return "No code lines available"
-        else:
-            try:
-                return '\n'.join(self.code_lines)
-            except Exception as e:
-                logging.exception(f"Error occurred while joining code lines: {e}")
-                return ''
+        try:
+            return '\n'.join(self.code_lines)
+        except Exception as e:
+            logging.exception(f"Error occurred while joining code lines: {e}")
+            return ''
 
     def __repr__(self):
         return self.__str__()

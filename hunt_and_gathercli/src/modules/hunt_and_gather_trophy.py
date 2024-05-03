@@ -47,11 +47,7 @@ class HunterXTrophy:
                 with open(save, 'w', encoding='utf-8') as file:
                     file.write(self.captured_code)
                 logging.info(f"Saving captured code as: {save}")
-        except InvalidSaveError as e:
-            raise
-        except FileNotFoundError as e:
-            raise
-        except IsADirectoryError as e:
+        except (InvalidSaveError, FileNotFoundError, IsADirectoryError) as e:
             raise
         except Exception as e:
             raise
@@ -71,7 +67,9 @@ class InvalidSaveError(IOError):
     This exception is raised when the provided save path is invalid.
     """
     def __init__(self, file_path: str):
-        super().__init__("Invalid save path provided: {}. The save path must be a non-empty string and a valid file path.".format(file_path))
+        super().__init__(
+            f"Invalid save path provided: {file_path}. The save path must be a non-empty string and a valid file path."
+        )
         self.file_path = file_path
 
     def __str__(self):

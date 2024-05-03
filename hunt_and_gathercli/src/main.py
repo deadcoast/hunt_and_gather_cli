@@ -2,6 +2,7 @@ import argparse
 import logging
 import os
 import re
+import sys
 import tokenize
 
 from cffi.setuptools_ext import execfile
@@ -115,7 +116,7 @@ class HuntCLI:
         pass
 
     # We must redefine it in Py3k if it's not already there
-    def execfile(file, glob=None, loc=None):
+    def execfile(self, glob=None, loc=None):
         if glob is None:
             import sys
             glob = sys._getframe().f_back.f_globals
@@ -124,14 +125,14 @@ class HuntCLI:
 
         # It seems that the best way is using tokenize.open(): http://code.activestate.com/lists/python-dev/131251/
         tokenize.open(__file__)# @UndefinedVariable
-        stream = tokenize.open(file)  # @UndefinedVariable
+        stream = tokenize.open(self)
         try:
             contents = stream.read()
         finally:
             stream.close()
 
         # execute the script (note: it's important to compile first to have the filename set in debug mode)
-        exec(compile(contents + "\n", file, 'exec'), glob, loc)
+        exec(compile(contents + "\n", self, 'exec'), glob, loc)
 
     def parse_args(self):
         parser = argparse.ArgumentParser(description="HuntCLI - Hunting for Code, Gathering Results")
